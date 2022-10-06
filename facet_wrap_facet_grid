@@ -1,0 +1,74 @@
+# Difference between facet_grid and facet_wrap
+# Grzegorz Kuryło
+# grzesiekkurylo@gmail.com
+
+# packages
+
+library(tidyverse)
+library(PupillometryR) # to add beatiful geom_flat_violin
+library(gridExtra) # to arrange plots
+
+# dataset
+
+mpg
+
+# reduce number of observation by min 5 per manufacturer (to better overview)
+
+df <- mpg %>% 
+  group_by(manufacturer) %>% 
+  mutate(N = n()) %>%
+  filter(N > 10)
+
+df
+
+# facet_wrap
+
+p1 <- ggplot(df, aes(x = reorder(manufacturer, - cty), y = cty, fill = manufacturer)) +
+  geom_flat_violin(position = position_nudge(x = 0.2, y = 0)) +
+  coord_flip()+
+  geom_jitter(aes(color=manufacturer), width=0.15, alpha = 0.6)+
+  labs(title = "FLUEL CONSUMPTION IN CITY",
+       x = "MANUFACTURER\n",
+       y = "\n MILES PER GALLON",
+       caption = "Data: mpg dataset")+
+  my_theme + 
+  facet_wrap(~drv, ncol=1)
+
+p1
+
+# in this case you have  possibility to add one more variable. There ~drv:
+# 4 - 4wd (four wheels drive) 
+# f - front-wheel drive
+# r - rear wheel drive
+
+
+
+# facet_grid
+
+# exclude some types of car to reduce "noise"
+
+df1 <- df %>%
+        filter(class != "2seater" & class != "minivan")
+
+
+
+p2 <- ggplot(df1, aes(x = reorder(manufacturer, - cty), y = cty, fill = manufacturer)) +
+      geom_flat_violin(position = position_nudge(x = 0.2, y = 0)) +
+      coord_flip()+
+      geom_jitter(aes(color=manufacturer), width=0.15, alpha = 0.6)+
+      labs(title = "FLUEL CONSUMPTION IN CITY",
+           x = "\nMANUFACTURER\n",
+           y = "\nCITY MILES PER GALLON",
+           caption = "Data: mpg dataset")+
+      my_theme + 
+      facet_grid(drv ~ class)
+
+p2
+
+
+# there you have possibility do add two more variable. In this case ~drv and ~class
+
+
+# now lets put this 2 plots together and publish it in LI :)
+
+grid.arrange(p1, p2, nrow =1)
