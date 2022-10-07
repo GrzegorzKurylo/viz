@@ -1,2 +1,2 @@
 # facets
-First time when I publish my code. Start from facet in ggplot2.
+ggplot2 package and use of facet_wrap and facet_grid in generation multiplots (+grid arrange).
